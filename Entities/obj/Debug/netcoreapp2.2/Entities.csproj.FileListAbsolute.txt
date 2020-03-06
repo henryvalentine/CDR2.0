@@ -1,0 +1,40 @@
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.deps.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.csproj.CoreCompileInputs.cache
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.dev.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.deps.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.dev.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.csproj.CoreCompileInputs.cache
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.deps.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.dev.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.csprojAssemblyReference.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.csproj.CoreCompileInputs.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.deps.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.dev.json
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.pdb

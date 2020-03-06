@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": "ClientApp",
+    "target": "ES6",
+    "checkJs": true,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": { 
+      "@Ui":  [ "./Ui" ],
+      "@Components/*": [ "./components/*" ],
+      "@Images/*": [ "./images/*" ],
+      "@Store/*": [ "./store/*" ],
+      "@Utils": [ "./utils.ts" ],
+      "@Styles/*": [ "./styles/*" ],
+      "@Models/*": [ "./models/*" ],
+      "@Pages/*": [ "./pages/*" ],
+      "@Layouts/*":  [ "./layouts/*" ],
+      "@Services/*": ["./services/*"],
+      "@Interfaces": ["./interfaces"],
+      "@Globals": ["./Globals"]
+    }
+  },
+  "exclude": [
+      "bin",
+      "node_modules",
+      "**/node_modules/*"
+  ]
+}
