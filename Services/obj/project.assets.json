@@ -6258,11 +6258,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Services\\Services.csproj",
+      "projectUniqueName": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Services\\Services.csproj",
       "projectName": "Services",
-      "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Services\\Services.csproj",
+      "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Services\\Services.csproj",
       "packagesPath": "C:\\Users\\jcval\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Services\\obj\\",
+      "outputPath": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Services\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -6281,8 +6281,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj": {
-              "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj"
+            "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj": {
+              "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj"
             }
           }
         }

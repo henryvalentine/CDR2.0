@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj": {}
+    "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj": {
+    "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj",
+        "projectUniqueName": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj",
         "projectName": "Entities",
-        "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\Entities.csproj",
+        "projectPath": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\Entities.csproj",
         "packagesPath": "C:\\Users\\jcval\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jcval\\OneDrive\\Documents\\Visual Studio 2019\\Projects\\1\\CDR\\Entities\\obj\\",
+        "outputPath": "C:\\Users\\jcval\\OneDrive\\Documents\\GitHub\\CDR2.0\\Entities\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
