@@ -9,6 +9,7 @@ using Services.Utils;
 using AutoMapper;
 using System.Data.SqlClient;
 using System.Data;
+using EFCore.BulkExtensions;
 
 namespace Services.CDRServices
 {
@@ -106,70 +107,95 @@ namespace Services.CDRServices
         public int AddPatients(List<PatientDemographyModel> patients, int currentPage)
         {
             var dtCount = 0;
+            var entities = new List<PatientDemography>();
             try
-            {               
-                using (SqlConnection connection = new SqlConn().GetSqlConn())
-                {                                                          
-                    using (SqlCommand cmd = new SqlCommand("stInsertPatients", connection))
+            {
+                patients.ForEach(p => 
+                {
+                    var pEntity = mapper.Map<PatientDemographyModel, PatientDemography>(p);
+                    if (p.HivEncounters.Any())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        var pList = new SqlParameter("@dtPatients", SqlDbType.Structured)
+                        var encounterEntities = new List<HivEncounter>();
+                        p.HivEncounters.ToList().ForEach(he => 
                         {
-                            TypeName = "dbo.PatientInfo",
-                            Value = new SqlListBuilder().BuildPatients(patients),
-                            Direction = ParameterDirection.Input
-                        };
-                        cmd.Parameters.Add(pList);
+                            var hEntity = mapper.Map<HivEncounterModel, HivEncounter>(he);
+                            encounterEntities.Add(hEntity);
+                        });
 
-                        var outputParameter = new SqlParameter
-                        {
-                            ParameterName = "@outputMessage",
-                            SqlDbType = SqlDbType.NVarChar,
-                            Size = -1,
-                            Direction = ParameterDirection.Output
-                        };
-                        cmd.Parameters.Add(outputParameter);
-
-                        //var rowsAffected = new SqlParameter
-                        //{
-                        //    ParameterName = "@rowsAffected",
-                        //    SqlDbType = SqlDbType.Int,
-                        //    Direction = ParameterDirection.Output
-                        //};
-                        //cmd.Parameters.Add(rowsAffected);
-
-                        connection.Open();
-                        var output = cmd.ExecuteNonQuery();
-                        var result = outputParameter.Value.ToString();
-                        //var count = Convert.ToInt32(rowsAffected.Value);
-
-                        if (output == -1 && result == "success")
-                        {
-                            //Profile SiteDataTracking
-                            var today = DateTime.Today;
-                            var siteId = patients[0].SiteId;
-                            var siteDataTrackingList = _context.SiteDataTracking.Where(s => s.SiteId == siteId && s.TrackingDate == today).OrderByDescending(c => c.Id).ToList();
-                            if (!siteDataTrackingList.Any())
-                            {
-                                var newTrack = new SiteDataTracking
-                                {
-                                    LastPatientPage = currentPage,
-                                    SiteId = siteId,
-                                    TrackingDate = DateTime.Today
-                                };
-                                _context.SiteDataTracking.Add(newTrack);
-                            }
-                            else
-                            {
-                                var st = siteDataTrackingList[0];
-                                st.LastPatientPage = currentPage;
-                                st.TrackingDate = DateTime.Today;
-                                _context.Entry(st).State = EntityState.Modified;
-                            }
-                            _context.SaveChanges();
-                            dtCount = patients.Count();
-                        }
+                        pEntity.HivEncounter = encounterEntities;
                     }
+
+                    if (p.PatientRegimens.Any())
+                    {
+                        var regimenEntities = new List<PatientRegimen>();
+                        p.PatientRegimens.ToList().ForEach(re =>
+                        {
+                            var rEntity = mapper.Map<PatientRegimenModel, PatientRegimen>(re);
+                            regimenEntities.Add(rEntity);
+                        });
+
+                        pEntity.PatientRegimen = regimenEntities;
+                    }
+
+                    if (p.LaboratoryReports.Any())
+                    {
+                        var labEntities = new List<LaboratoryReport>();
+                        p.LaboratoryReports.ToList().ForEach(re =>
+                        {
+                            var rEntity = mapper.Map<LaboratoryReportModel, LaboratoryReport>(re);
+                            labEntities.Add(rEntity);
+                        });
+
+                        pEntity.LaboratoryReport = labEntities;
+                    }
+
+                    if (p.FingerPrints.Any())
+                    {
+                        var fingerEntities = new List<FingerPrint>();
+                        p.FingerPrints.ToList().ForEach(re =>
+                        {
+                            var fEntity = mapper.Map<FingerPrintModel, FingerPrint>(re);
+                            fingerEntities.Add(fEntity);
+                        });
+
+                        pEntity.FingerPrint = fingerEntities;
+                    }
+                    entities.Add(pEntity);
+                });
+
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    var bulkConfig = new BulkConfig { PreserveInsertOrder = true, SetOutputIdentity = true };
+                    _context.BulkInsert(entities, bulkConfig);
+                    entities.ForEach(entity =>
+                    {
+                        entity.HivEncounter.ToList().ForEach(e =>
+                        {
+                            e.PatientId = entity.Id;
+                        });
+                        _context.BulkInsert(entity.HivEncounter.ToList());
+
+                        entity.PatientRegimen.ToList().ForEach(r =>
+                        {
+                            r.PatientId = entity.Id;
+                        });
+                        _context.BulkInsert(entity.PatientRegimen.ToList());
+
+                        entity.LaboratoryReport.ToList().ForEach(l =>
+                        {
+                            l.PatientId = entity.Id;
+                        });
+                        _context.BulkInsert(entity.LaboratoryReport.ToList());
+
+                        entity.FingerPrint.ToList().ForEach(fi =>
+                        {
+                            fi.PatientId = entity.Id;
+                        });
+                        _context.BulkInsert(entity.FingerPrint.ToList());
+
+                        transaction.Commit();
+                    });
+
                 }
                 return dtCount;
             }
@@ -194,7 +220,7 @@ namespace Services.CDRServices
                     var duplicates = _context.PatientDemography.Where(m => m.PatientIdentifier.Trim().ToLower() == patient.PatientIdentifier.Trim().ToLower() && m.SiteId == patient.SiteId).ToList();
                     if (!duplicates.Any())
                     {
-                        var sites = _context.Site.Where(m => m.SiteId.Trim().ToLower() == patient.SiteCode.Trim().ToLower()).ToList();
+                        var sites = _context.Site.Where(m => m.SiteId.Trim().ToLower() == patient.FacilityId.Trim().ToLower()).ToList();
                         if (sites.Any())
                         {
                             var patientEntity = mapper.Map<PatientDemographyModel, PatientDemography>(patient);

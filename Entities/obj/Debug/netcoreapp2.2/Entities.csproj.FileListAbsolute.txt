@@ -38,3 +38,13 @@ C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.dll
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Entities\obj\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\bin\Debug\netcoreapp2.2\Entities.deps.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\bin\Debug\netcoreapp2.2\Entities.runtimeconfig.dev.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\obj\Debug\netcoreapp2.2\Entities.csprojAssemblyReference.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\obj\Debug\netcoreapp2.2\Entities.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\obj\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Entities\obj\Debug\netcoreapp2.2\Entities.pdb

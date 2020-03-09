@@ -45,3 +45,14 @@ C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Services\obj
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Services\obj\Debug\netcoreapp2.2\Services.csproj.CopyComplete
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Services\obj\Debug\netcoreapp2.2\Services.dll
 C:\Users\jcval\OneDrive\Documents\Visual Studio 2019\Projects\1\CDR\Services\obj\Debug\netcoreapp2.2\Services.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.csprojAssemblyReference.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.AssemblyInfoInputs.cache
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.AssemblyInfo.cs
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\bin\Debug\netcoreapp2.2\Services.deps.json
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\bin\Debug\netcoreapp2.2\Services.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\bin\Debug\netcoreapp2.2\Services.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\bin\Debug\netcoreapp2.2\Entities.dll
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\bin\Debug\netcoreapp2.2\Entities.pdb
+C:\Users\jcval\OneDrive\Documents\GitHub\CDR2.0\Services\obj\Debug\netcoreapp2.2\Services.csproj.CopyComplete
