@@ -47,3 +47,4 @@ namespace Entities.Models
         public virtual ICollection<PatientRegimen> PatientRegimen { get; set; }
     }
 }
+

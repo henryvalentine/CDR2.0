@@ -13,7 +13,7 @@ using EFCore.BulkExtensions;
 
 namespace Services.CDRServices
 {
-    public class PatientDemographyService : Profile, IPatientDemographyService
+    public class PatientDemographyService : Profile, IPatientService
     {
         private readonly CDRContext _context;
         private readonly IMapper mapper;
@@ -55,7 +55,7 @@ namespace Services.CDRServices
             }
         }
 
-        public int AddPatients(List<PatientDemographyModel> patients, int currentPage, string siteId)
+        public int AddPatientList(List<PatientDemographyModel> patients)
         {
             try
             {
@@ -70,8 +70,7 @@ namespace Services.CDRServices
                     var duplicates = _context.PatientDemography.Where(m => m.PatientIdentifier.Trim().ToLower() == patient.PatientIdentifier.Trim().ToLower());
                     if (!duplicates.Any())
                     {
-                        var patientEntity = mapper.Map<PatientDemographyModel, PatientDemography>(patient);
-                        patientEntity.FacilityId = siteId;                            
+                        var patientEntity = mapper.Map<PatientDemographyModel, PatientDemography>(patient);                     
                         _context.PatientDemography.Add(patientEntity); 
                         processed++;                                              
                     } 
@@ -104,7 +103,7 @@ namespace Services.CDRServices
                 return -1;
             }
         }
-        public int AddPatients(List<PatientDemographyModel> patients, int currentPage)
+        public int AddPatients(List<PatientDemographyModel> patients)
         {
             var dtCount = 0;
             var entities = new List<PatientDemography>();
@@ -166,32 +165,32 @@ namespace Services.CDRServices
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     var bulkConfig = new BulkConfig { PreserveInsertOrder = true, SetOutputIdentity = true };
-                    _context.BulkInsert(entities, bulkConfig);
+                    _context.BulkInsertOrUpdate(entities, bulkConfig);
                     entities.ForEach(entity =>
                     {
                         entity.HivEncounter.ToList().ForEach(e =>
                         {
                             e.PatientId = entity.Id;
                         });
-                        _context.BulkInsert(entity.HivEncounter.ToList());
+                        _context.BulkInsertOrUpdate(entity.HivEncounter.ToList());
 
                         entity.PatientRegimen.ToList().ForEach(r =>
                         {
                             r.PatientId = entity.Id;
                         });
-                        _context.BulkInsert(entity.PatientRegimen.ToList());
+                        _context.BulkInsertOrUpdate(entity.PatientRegimen.ToList());
 
                         entity.LaboratoryReport.ToList().ForEach(l =>
                         {
                             l.PatientId = entity.Id;
                         });
-                        _context.BulkInsert(entity.LaboratoryReport.ToList());
+                        _context.BulkInsertOrUpdate(entity.LaboratoryReport.ToList());
 
                         entity.FingerPrint.ToList().ForEach(fi =>
                         {
                             fi.PatientId = entity.Id;
                         });
-                        _context.BulkInsert(entity.FingerPrint.ToList());
+                        _context.BulkInsertOrUpdate(entity.FingerPrint.ToList());
 
                         transaction.Commit();
                     });
@@ -204,6 +203,7 @@ namespace Services.CDRServices
                 return 0;
             }
         }
+
         public int TrackPatientData(List<PatientDemographyModel> patients)
         {
             try
@@ -214,16 +214,16 @@ namespace Services.CDRServices
                     return 0;
                 }
 
-                patients.ForEach(patient =>
+                patients.ForEach(p =>
                 {
                     long patientId = 0;
-                    var duplicates = _context.PatientDemography.Where(m => m.PatientIdentifier.Trim().ToLower() == patient.PatientIdentifier.Trim().ToLower() && m.SiteId == patient.SiteId).ToList();
+                    var duplicates = _context.PatientDemography.Where(m => m.PatientIdentifier.Trim().ToLower() == p.PatientIdentifier.Trim().ToLower() && m.SiteId == p.SiteId).ToList();
                     if (!duplicates.Any())
                     {
-                        var sites = _context.Site.Where(m => m.SiteId.Trim().ToLower() == patient.FacilityId.Trim().ToLower()).ToList();
+                        var sites = _context.Site.Where(m => m.SiteId.Trim().ToLower() == p.FacilityId.Trim().ToLower()).ToList();
                         if (sites.Any())
                         {
-                            var patientEntity = mapper.Map<PatientDemographyModel, PatientDemography>(patient);
+                            var patientEntity = mapper.Map<PatientDemographyModel, PatientDemography>(p);
                             patientEntity.SiteId = sites[0].Id;
                             _context.PatientDemography.Add(patientEntity);
                             _context.SaveChanges();   
@@ -236,37 +236,64 @@ namespace Services.CDRServices
                     }
                     if(patientId > 0)
                     {
-                        if(patient.ArtVisit.Any())
+                        using (var transaction = _context.Database.BeginTransaction())
                         {
-                            patient.ArtVisit.ForEach(artVisit =>
-                            {
-                                var artVisitEntity = mapper.Map<ArtVisitModel, ArtVisit>(artVisit);                         
-                                artVisitEntity.PatientId = patientId;
-                                _context.ArtVisit.Add(artVisitEntity);
-                            });
-                        }
-                      
-                        if(patient.ArtBaseline.Any())
-                        {
-                            patient.ArtBaseline.ForEach(artBaseline =>
-                            {
-                                var artBaselineEntity = mapper.Map<ArtBaselineModel, ArtBaseline>(artBaseline);                         
-                                artBaselineEntity.PatientId = patientId;
-                                _context.ArtBaseline.Add(artBaselineEntity);
-                            });
-                        }
-                         if(patient.LabResult.Any())
-                        {
-                            patient.LabResult.ForEach(labResult =>
-                            {
-                                var labResultEntity = mapper.Map<LabResultModel, LabResult>(labResult);                         
-                                labResultEntity.PatientId = patientId;
-                                _context.LabResult.Add(labResultEntity);
-                            });
-                        }
+                            var bulkConfig = new BulkConfig { PreserveInsertOrder = true, SetOutputIdentity = true };
 
-                        _context.SaveChanges(); 
-                        processed++;
+                            if (p.HivEncounters.Any())
+                            {
+                                var encounterEntities = new List<HivEncounter>();
+                                p.HivEncounters.ToList().ForEach(he =>
+                                {
+                                    var hEntity = mapper.Map<HivEncounterModel, HivEncounter>(he);
+                                    hEntity.PatientId = patientId;
+                                    encounterEntities.Add(hEntity);
+                                });
+
+                                _context.BulkInsertOrUpdate(encounterEntities);
+                            }
+
+                            if (p.PatientRegimens.Any())
+                            {
+                                var regimenEntities = new List<PatientRegimen>();
+                                p.PatientRegimens.ToList().ForEach(re =>
+                                {
+                                    var rEntity = mapper.Map<PatientRegimenModel, PatientRegimen>(re);
+                                    rEntity.PatientId = patientId;
+                                    regimenEntities.Add(rEntity);
+                                });
+
+                                _context.BulkInsertOrUpdate(regimenEntities);
+                            }
+
+                            if (p.LaboratoryReports.Any())
+                            {
+                                var labEntities = new List<LaboratoryReport>();
+                                p.LaboratoryReports.ToList().ForEach(re =>
+                                {
+                                    var lEntity = mapper.Map<LaboratoryReportModel, LaboratoryReport>(re);
+                                    lEntity.PatientId = patientId;
+                                    labEntities.Add(lEntity);
+                                });
+                                _context.BulkInsertOrUpdate(labEntities);
+                            }
+
+                            if (p.FingerPrints.Any())
+                            {
+                                var fingerEntities = new List<FingerPrint>();
+                                p.FingerPrints.ToList().ForEach(re =>
+                                {
+                                    var fEntity = mapper.Map<FingerPrintModel, FingerPrint>(re);
+                                    fEntity.PatientId = patientId;
+                                    fingerEntities.Add(fEntity);
+                                });
+
+                                _context.BulkInsertOrUpdate(fingerEntities);
+                            }
+
+                            transaction.Commit();
+                            processed++;
+                        }                        
                     }                    
                 });
 
@@ -293,22 +320,31 @@ namespace Services.CDRServices
                     return -2;
                 }
                 var patientEntity = patientEntities[0];
-                patientEntity.FirstName = patient.FirstName;
-                patientEntity.LastName = patient.LastName;
+                patientEntity.SiteId = patient.SiteId;
+                patientEntity.EnrolleeCode = patient.EnrolleeCode;
+                patientEntity.PatientDateOfBirth = patient.PatientDateOfBirth;
                 patientEntity.PatientIdentifier = patient.PatientIdentifier;
-                patientEntity.VisitDate = patient.VisitDate;
-                patientEntity.StateId = patient.StateId;
-                patientEntity.Sex = patient.Sex;
-                patientEntity.DateOfBirth = patient.DateOfBirth;
-                patientEntity.Age = patient.Age;
-                patientEntity.Village = patient.Village;
-                patientEntity.Town = patient.Town;
-                patientEntity.Lga = patient.Lga;
-                patientEntity.State = patient.State;
-                patientEntity.AddressLine1 = patient.AddressLine1;
-                patientEntity.PhoneNumber = patient.PhoneNumber;
-                patientEntity.MaritalStatus = patient.MaritalStatus;
-                patientEntity.PreferredLanguage = patient.PreferredLanguage;
+                patientEntity.PatientSexCode = patient.PatientSexCode;
+                patientEntity.FacilityId = patient.FacilityId;
+                patientEntity.FacilityName = patient.FacilityName;
+                patientEntity.FacilityTypeCode = patient.FacilityTypeCode;
+                patientEntity.OtherIdnumber = patient.OtherIdnumber;
+                patientEntity.OtherIdtypeCode = patient.OtherIdtypeCode;
+                patientEntity.ConditionCode = patient.ConditionCode;
+                patientEntity.AddressTypeCode = patient.AddressTypeCode;
+                patientEntity.StateCode = patient.StateCode;
+                patientEntity.CountryCode = patient.CountryCode;
+                patientEntity.ProgramAreaCode = patient.ProgramAreaCode;
+                patientEntity.FirstConfirmedHivtestDate = patient.FirstConfirmedHivtestDate;
+                patientEntity.ArtstartDate = patient.ArtstartDate;
+                patientEntity.TransferredOutStatus = patient.TransferredOutStatus;
+                patientEntity.EnrolledInHivcareDate = patient.EnrolledInHivcareDate;
+                patientEntity.HospitalNumber = patient.HospitalNumber;
+                patientEntity.DateOfFirstReport = patient.DateOfFirstReport;
+                patientEntity.DateOfLastReport = patient.DateOfLastReport;
+                patientEntity.DiagnosisDate = patient.DiagnosisDate;
+                patientEntity.PatientDieFromThisIllness = patient.PatientDieFromThisIllness;
+                patientEntity.PatientAge = patient.PatientAge;
                 _context.Entry(patientEntity).State = EntityState.Modified;
                 _context.SaveChanges();
                 return patientEntity.Id;
@@ -324,13 +360,12 @@ namespace Services.CDRServices
             try
             {
                 var patientList = _context.PatientDemography
-                .Include("Site")
-                .Include("ArtBaseline")
-                .Include("ArtVisit")
-                .Include("LabResult")
+                .Include("HivEncounter")
+                .Include("LaboratoryReport")
+                .Include("PatientRegimen")
                 .Where(c => c.Id == patientId 
-                && (c.ArtVisit.Any() || c.ArtBaseline.Any())).ToList();
-   
+                && (c.PatientRegimen.Any() || c.HivEncounter.Any())).ToList();
+                  
                 if (!patientList.Any())
                 {
                     return new PatientDemographyModel();
@@ -344,71 +379,57 @@ namespace Services.CDRServices
                     return new PatientDemographyModel();
                 }
                 
-                var baselines = new ArtBaselineModel();
-                var artVisit = new List<ArtVisitModel>();
-                var labResult = new List<LabResultModel>();
-                patientModel.SiteName = patientEntity.Site.Name;
+                var artVisit = new List<HivEncounterModel>();
+                var drugPickups = new List<PatientRegimenModel>();
+                var labResult = new List<LaboratoryReportModel>();
+
+                patientModel.FacilityName = patientEntity.Site.Name;
                 patientModel.StateCode = patientEntity.Site.StateCode;
                 patientModel.Status = "Unknown Status";
-
-                patientModel.DateOfBirthStr = patientModel.DateOfBirth.Value.ToShortDateString();
-                if(patientEntity.ArtVisit.Any())
+                
+                patientModel.DateOfBirthStr = patientModel.PatientDateOfBirth.Value.ToShortDateString();
+                if(patientEntity.PatientRegimen.Any())
                 {
-                    var maxDate = patientEntity.ArtVisit.Max(s => s.AppointmentDate);                    
-                    patientModel.Status = StatusMapper.GetClientStatus(maxDate);
-                    patientEntity.ArtVisit.ToList().ForEach(v => 
-                    {
-                        artVisit.Add(new ArtVisitModel
-                        {
-                            Id = v.Id,
-                            VisitDate = v.VisitDate,
-                            AppointmentDate = v.AppointmentDate,
-                            VisitDateStr = v.VisitDate != null? v.VisitDate.Value.ToShortDateString() : "NA",
-                            AppointmentDateStr = v.VisitDate != null? v.AppointmentDate.Value.ToShortDateString() : "NA"
-                        });
-                    });  
-                    artVisit = artVisit.OrderByDescending(g => g.AppointmentDate).ToList();
-                }
+                    var maxVisitDate = patientEntity.PatientRegimen.Max(s => s.VisitDate);
+                    var maxDuration = patientEntity.PatientRegimen.Max(s => s.PrescribedRegimenDuration);
+                    patientModel.Status = StatusMapper.GetClientStatus2(maxVisitDate, maxDuration);
 
-                if (patientEntity.LabResult.Any())
-                {
-                    patientEntity.LabResult.ToList().ForEach(v =>
+                    patientEntity.PatientRegimen.ToList().ForEach(v => 
                     {
-                        labResult.Add(new LabResultModel
-                        {
-                            Id = v.Id,
-                            DateReported = v.DateReported,
-                            TestDateStr = v.TestDate != null ? v.TestDate.ToShortDateString() : "NA",
-                            DateReportedStr = v.DateReported != null ? v.DateReported.ToShortDateString() : "NA",
-                            LabNumber = v.LabNumber,
-                            TestGroup = v.TestGroup,
-                            Description = v.Description,
-                            TestResult = v.TestResult
-                        });
+                        var regimen = mapper.Map<PatientRegimen, PatientRegimenModel>(v);
+                        regimen.VisitDateStr = v.VisitDate != null ? v.VisitDate.Value.ToShortDateString() : "NA";
+                        regimen.AppointmentDateStr = v.VisitDate != null && v.PrescribedRegimenDuration > 0 ? v.VisitDate.Value.AddDays(v.PrescribedRegimenDuration).ToShortDateString() : "NA";
+                        drugPickups.Add(regimen);                        
                     });
-
-                    labResult = labResult.OrderByDescending(g => g.DateReported).ToList();
+                   
+                    drugPickups = drugPickups.OrderByDescending(g => g.VisitDate).ToList();
                 }
 
-                if (patientEntity.ArtBaseline.Any())
+                if (patientEntity.LaboratoryReport.Any())
                 {
-                    var baseL = patientEntity.ArtBaseline.ToList()[0];
-
-                    patientModel.Baseline = new ArtBaselineModel
+                    patientEntity.LaboratoryReport.ToList().ForEach(v =>
                     {
-                        HivConfirmationDateStr = baseL.HivConfirmationDate != null ? baseL.HivConfirmationDate.Value.ToShortDateString() : "NA",
-                        EnrolmentDateStr = baseL.EnrolmentDate != null ? baseL.EnrolmentDate.Value.ToShortDateString() : "NA",
-                        ArtDateStr = baseL.ArtDate != null ? baseL.ArtDate.Value.ToShortDateString() : "NA"
-                    };
+                        var lab = mapper.Map<LaboratoryReport, LaboratoryReportModel>(v);
+                        lab.VisitDateStr = v.VisitDate.Value.ToShortDateString();
+                        lab.CollectionDateStr = v.VisitDate.Value.ToShortDateString();
+                        lab.OrderedTestDateStr = v.VisitDate.Value.ToShortDateString();
+                        lab.ResultedTestDateStr = v.VisitDate.Value.ToShortDateString();
+                        labResult.Add(lab);
+                    });
+                    labResult = labResult.OrderByDescending(g => g.OrderedTestDate).ToList();
                 }
 
-                patientModel.Site = new SiteModel();
-                patientModel.ArtBaseline = new List<ArtBaselineModel>();
-                patientModel.ArtVisit = new List<ArtVisitModel>();
-                patientModel.LabResult = new List<LabResultModel>();
-
-                patientModel.ArtVisit = artVisit;
-                patientModel.LabResult = labResult;
+                if (patientEntity.HivEncounter.Any())
+                {
+                    patientEntity.HivEncounter.ToList().ForEach(v =>
+                    {
+                        var encounter = mapper.Map<HivEncounter, HivEncounterModel>(v);
+                        encounter.VisitDateStr = v.VisitDate.ToShortDateString();
+                        encounter.NextAppointmentDateStr = v.NextAppointmentDate.Value.ToShortDateString();
+                        artVisit.Add(encounter);
+                    });
+                    artVisit = artVisit.OrderByDescending(g => g.VisitDate).ToList();
+                }
                 return patientModel;
             }
             catch (Exception ex)
@@ -416,11 +437,12 @@ namespace Services.CDRServices
                 return new PatientDemographyModel();
             }
         }
+
         public PatientDemographyModel GetPatientByEnrolmentId(string enrolmentId)
         {
             try
             {
-                var patientList = _context.PatientDemography.Include("Site").Where(c => c.PatientIdentifier == enrolmentId).ToList();
+                var patientList = _context.PatientDemography.Where(c => c.PatientIdentifier == enrolmentId).ToList();
 
                 if (!patientList.Any())
                 {
@@ -466,7 +488,7 @@ namespace Services.CDRServices
                     }
                 });
 
-                return PatientModels.OrderBy(m => m.FirstName).ToList();
+                return PatientModels.OrderBy(m => m.PatientIdentifier).ToList();
             }
             catch (Exception ex)
             {
@@ -478,9 +500,7 @@ namespace Services.CDRServices
             try
             {
                 var patientEntites = _context.PatientDemography
-                .Include("Site")
-                .Include("ArtBaseline")
-                .Include("ArtVisit")
+                .Include("PatientRegimen")
                 .OrderByDescending(m => m.Id).Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage).ToList();
 
                 if (!patientEntites.Any())
@@ -494,32 +514,22 @@ namespace Services.CDRServices
                 patientEntites.ForEach(m =>
                 {
                     var patientModel = mapper.Map<PatientDemography, PatientDemographyModel>(m);
-                    patientModel.DateOfBirthStr = patientModel.DateOfBirth?.ToShortDateString()?? "NA";
-                    patientModel.Name = patientModel.FirstName + " " + patientModel.LastName;
+                    patientModel.DateOfBirthStr = patientModel.PatientDateOfBirth?.ToShortDateString()?? "NA";
                     patientModel.Status = "Unknown";
-                    DateTime? maxDate = DateTime.Today;
-                    if(m.ArtVisit.Any())
+
+                    if(m.PatientRegimen.Any())
                     {
-                        maxDate = m.ArtVisit.Max(s => s.AppointmentDate); 
-                        patientModel.VisitDateStr  = m.ArtVisit.Max(s => s.VisitDate)?.ToShortDateString()?? "NA";                 
-                        patientModel.Status = StatusMapper.GetClientStatus(maxDate);
-                        patientModel.AppointmentDate = maxDate;
-                        patientModel.AppointmentDateStr = maxDate?.ToShortDateString()?? "NA";
-                    } 
-                    if(m.ArtBaseline.Any())
-                    {
-                        var baseline = m.ArtBaseline.ToList()[0];
-                        patientModel.ArtDateStr = baseline.ArtDate?.ToShortDateString()?? "NA";
+                        var maxVisitDate = m.PatientRegimen.Max(s => s.VisitDate);
+                        var maxDuration = m.PatientRegimen.Max(s => s.PrescribedRegimenDuration);
+                        patientModel.VisitDateStr = maxVisitDate?.ToShortDateString() ?? "NA";
+                        patientModel.AppointmentDateStr = (maxVisitDate.Value.AddDays(maxDuration)).ToShortDateString() ?? "NA";                        
+                        patientModel.Status = StatusMapper.GetClientStatus2(maxVisitDate, maxDuration);
                     }
 
-                    if (patientModel.Id > 0)
-                    {
-                        patientModel.SiteName = m.Site.Name;
-                        patientModel.Site = new SiteModel();
-                        patientModel.ArtBaseline = new List<ArtBaselineModel>();
-                        patientModel.ArtVisit = new List<ArtVisitModel>();
-                        PatientModels.Add(patientModel);
-                    }
+                    patientModel.ArtstartDateStr = m.ArtstartDate.Value.ToShortDateString() ?? "NA";
+                    patientModel.FacilityName = m.FacilityName;
+                    PatientModels.Add(patientModel);
+
                 });
 
                 dataCount = _context.PatientDemography.Count();
@@ -536,9 +546,7 @@ namespace Services.CDRServices
             try
             {
                 var patientEntites = _context.PatientDemography.Where(p => p.SiteId == siteId)
-                .Include("Site")
-                .Include("ArtBaseline")
-                .Include("ArtVisit")
+                .Include("PatientRegimen")
                 .OrderByDescending(m => m.Id).Skip((pageNumber - 1) * itemsPerPage).Take(itemsPerPage).ToList();
 
                 if (!patientEntites.Any())
@@ -552,30 +560,21 @@ namespace Services.CDRServices
                 patientEntites.ForEach(m =>
                 {
                     var patientModel = mapper.Map<PatientDemography, PatientDemographyModel>(m);
-                    patientModel.DateOfBirthStr = patientModel.DateOfBirth?.ToShortDateString()?? "NA";
-                    patientModel.Name = patientModel.FirstName + " " + patientModel.LastName;
+                    patientModel.DateOfBirthStr = patientModel.PatientDateOfBirth?.ToShortDateString() ?? "NA";
                     patientModel.Status = "Unknown";
-                    if(m.ArtVisit.Any())
+
+                    if (m.PatientRegimen.Any())
                     {
-                        var maxDate = m.ArtVisit.Max(s => s.AppointmentDate); 
-                        patientModel.VisitDateStr  = m.ArtVisit.Max(s => s.VisitDate)?.ToShortDateString()?? "NA";                 
-                        patientModel.Status = StatusMapper.GetClientStatus(maxDate);
-                        patientModel.AppointmentDateStr = maxDate?.ToShortDateString()?? "NA";
-                    }
-                    if(m.ArtBaseline.Any())
-                    {
-                        var baseline = m.ArtBaseline.ToList()[0];
-                        patientModel.ArtDateStr = baseline.ArtDate?.ToShortDateString()?? "NA";
+                        var maxVisitDate = m.PatientRegimen.Max(s => s.VisitDate);
+                        var maxDuration = m.PatientRegimen.Max(s => s.PrescribedRegimenDuration);
+                        patientModel.VisitDateStr = maxVisitDate?.ToShortDateString() ?? "NA";
+                        patientModel.AppointmentDateStr = (maxVisitDate.Value.AddDays(maxDuration)).ToShortDateString() ?? "NA";
+                        patientModel.Status = StatusMapper.GetClientStatus2(maxVisitDate, maxDuration);
                     }
 
-                    if (patientModel.Id > 0)
-                    {
-                        patientModel.SiteName = m.Site.Name;
-                        patientModel.Site = new SiteModel();
-                        patientModel.ArtBaseline = new List<ArtBaselineModel>();
-                        patientModel.ArtVisit = new List<ArtVisitModel>();
-                        PatientModels.Add(patientModel);
-                    }
+                    patientModel.ArtstartDateStr = m.ArtstartDate.Value.ToShortDateString() ?? "NA";
+                    patientModel.FacilityName = m.FacilityName;
+                    PatientModels.Add(patientModel);
                 });
 
                 dataCount = _context.PatientDemography.Count(p => p.SiteId == siteId);
@@ -588,7 +587,7 @@ namespace Services.CDRServices
                 return new List<PatientDemographyModel>();
             }
         }
-        public List<PatientDemographyModel> Search(out int dataCount, string term = null)
+        public List<PatientDemographyModel> Search(out int dataCount, string facilityId, string term = null)
         {
             try
             {
@@ -596,10 +595,7 @@ namespace Services.CDRServices
 
                 if (!string.IsNullOrEmpty(term))
                 {
-                    patientEntites = _context.PatientDemography.Include("Site").Where(m => m.PatientIdentifier.ToLower() == term.ToLower().Trim()
-                    || m.LastName.ToLower().Trim().Contains(term.ToLower().Trim())
-                    || m.FirstName.ToLower().Trim().Contains(term.ToLower().Trim())
-                    ).ToList();
+                    patientEntites = _context.PatientDemography.Include("PatientRegimen").Where(m => m.FacilityId == facilityId && m.PatientIdentifier.ToLower().Contains(term.ToLower().Trim())).ToList();
                 }
                 else
                 {
@@ -616,17 +612,25 @@ namespace Services.CDRServices
 
                 patientEntites.ForEach(m =>
                 {
-                    var PatientDemographyModel = mapper.Map<PatientDemography, PatientDemographyModel>(m);
-                    if (PatientDemographyModel.Id > 0)
+                    var patientModel = mapper.Map<PatientDemography, PatientDemographyModel>(m);
+                    patientModel.DateOfBirthStr = patientModel.PatientDateOfBirth?.ToShortDateString() ?? "NA";
+                    patientModel.Status = "Unknown";
+
+                    if (m.PatientRegimen.Any())
                     {
-                        PatientDemographyModel.SiteName = m.Site.Name;
-                        PatientModels.Add(PatientDemographyModel);
+                        var maxVisitDate = m.PatientRegimen.Max(s => s.VisitDate);
+                        var maxDuration = m.PatientRegimen.Max(s => s.PrescribedRegimenDuration);
+                        patientModel.VisitDateStr = maxVisitDate?.ToShortDateString() ?? "NA";
+                        patientModel.AppointmentDateStr = (maxVisitDate.Value.AddDays(maxDuration)).ToShortDateString() ?? "NA";
+                        patientModel.Status = StatusMapper.GetClientStatus2(maxVisitDate, maxDuration);
                     }
+
+                    patientModel.ArtstartDateStr = m.ArtstartDate.Value.ToShortDateString() ?? "NA";
+                    patientModel.FacilityName = m.FacilityName;
+                    PatientModels.Add(patientModel);
                 });
 
-                dataCount = _context.PatientDemography.Count(m => m.PatientIdentifier.ToLower() == term.ToLower().Trim()
-                    || m.LastName.ToLower().Trim().Contains(term.ToLower().Trim())
-                    || m.FirstName.ToLower().Trim().Contains(term.ToLower().Trim()));
+                dataCount = _context.PatientDemography.Count(m => m.FacilityId == facilityId && m.PatientIdentifier.ToLower().Contains(term.ToLower().Trim()));
 
                 return PatientModels;
 

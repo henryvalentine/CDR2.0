@@ -19,4 +19,12 @@ namespace Services.DataModels
 
         public virtual PatientDemographyModel Patient { get; set; }
     }
+
+    public partial class LaboratoryReportModel
+    {
+        public string VisitDateStr { get; set; }
+        public string CollectionDateStr { get; set; }
+        public string OrderedTestDateStr { get; set; }
+        public string ResultedTestDateStr { get; set; }
+    }
 }

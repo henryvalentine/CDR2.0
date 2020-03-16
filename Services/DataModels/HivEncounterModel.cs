@@ -21,4 +21,10 @@ namespace Services.DataModels
 
         public virtual PatientDemographyModel Patient { get; set; }
     }
+
+    public partial class HivEncounterModel
+    {
+        public string VisitDateStr { get; set; }
+        public string NextAppointmentDateStr { get; set; }
+    }
 }

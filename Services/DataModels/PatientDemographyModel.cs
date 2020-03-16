@@ -38,4 +38,18 @@ namespace Services.DataModels
         public virtual ICollection<LaboratoryReportModel> LaboratoryReports { get; set; }
         public virtual ICollection<PatientRegimenModel> PatientRegimens { get; set; }
     }
+
+
+    public partial class PatientDemographyModel
+    {
+        public string Status { get; set; }
+        public string VisitDateStr { set; get; }
+        public string FirstConfirmedHivtestDateStr { set; get; }
+        public string EnrolledInHivcareDateStr { set; get; }
+        public string AppointmentDateStr { set; get; }
+        public string DateOfFirstReportStr { set; get; }
+        public string DateOfBirthStr { get; set; }
+        public string ArtstartDateStr { get; set; }
+    }
+
 }

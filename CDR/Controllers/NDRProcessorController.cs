@@ -21,10 +21,12 @@ namespace CDR.Controllers
     [Route("api/[controller]")]
     public class NDRProcessorController : Controller
     {
+        private readonly IPatientService _patientService;
         private readonly ISiteService _siteService;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public NDRProcessorController(ISiteService siteService, IHostingEnvironment hostingEnvironment = null)
+        public NDRProcessorController(IPatientService patientService, ISiteService siteService, IHostingEnvironment hostingEnvironment = null)
         {
+            _patientService = patientService;
             _siteService = siteService;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -73,13 +75,20 @@ namespace CDR.Controllers
                                     if (fileName.EndsWith(".xml") && !fileName.StartsWith("__macosx"))
                                     {
                                         var doc = new XmlDocument();
-                                        doc.Load(zipStream);
-                                        var tt = doc.LastChild.ChildNodes;                                        
+                                        doc.Load(zipStream);                                
                                         XmlDocument d = new XmlDocument();
                                         d.LoadXml(doc.LastChild.OuterXml);
                                         var dSerialised = JsonConvert.SerializeXmlNode(d);
                                         var ndrExtract = JsonConvert.DeserializeObject<Extract>(dSerialised);
                                         facilityFiles.Add(ndrExtract.Container);
+
+
+                                        string xmlString = System.IO.File.ReadAllText(fileName);
+                                        var serializer = new XmlSerializer(typeof(List<Extract>), new XmlRootAttribute("Container"));
+                                        var stringReader = new StringReader(xmlString);
+                                        var ndrExtract1 = (Extract)serializer.Deserialize(stringReader);
+
+
                                     }
 
                                 }
