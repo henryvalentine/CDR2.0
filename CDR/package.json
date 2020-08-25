@@ -82,7 +82,7 @@
     "custom-event-polyfill": "1.0.7",
     "domain-wait": "^1.2.1",
     "formik": "2.1.4",
-    "highcharts": "^8.0.1",
+    "highcharts": "^8.1.1",
     "highcharts-react-official": "^3.0.0",
     "history": "4.10.1",
     "json-to-url": "1.0.5",
