@@ -86,7 +86,7 @@
     "highcharts-react-official": "^3.0.0",
     "history": "4.10.1",
     "json-to-url": "1.0.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "nserializejson": "1.0.31",
     "nval": "1.1.5",
     "nval-tippy": "1.0.40",
